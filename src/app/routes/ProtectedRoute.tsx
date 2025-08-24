@@ -1,7 +1,16 @@
-﻿import React from 'react';
-import { Route, RouteProps } from 'react-router-dom';
+﻿import React from "react";
+import { Route, Redirect, RouteProps } from "react-router-dom";
+import { isAuthed } from "@/shared/http";
 
-export default function ProtectedRoute(props: RouteProps) {
-  return <Route {...props} />;
+type Props = RouteProps & { component: React.ComponentType<any> };
+
+export default function ProtectedRoute({ component: Component, ...rest }: Props) {
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        isAuthed() ? <Component {...props} /> : <Redirect to="/login" />
+      }
+    />
+  );
 }
-

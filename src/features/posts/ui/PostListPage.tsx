@@ -1,50 +1,56 @@
-﻿import React from "react";
-import { Table, Alert } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useHistory } from "react-router-dom";
-import { FETCH_REQUEST } from "../model/slice";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+﻿// src/features/posts/ui/PostListPage.tsx
+import React, { useEffect, useState } from "react";
+import { Table, Button, Space } from "antd";
+import { http } from "@/shared/http";
 
 export default function PostListPage() {
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const query = useQuery();
-  const page = Number(query.get("page") ?? 1);
-  const pageSize = Number(query.get("pageSize") ?? 10);
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const { items, total, loading, error } = useSelector((s: any) => s.posts || { items: [], total: 0, loading: false });
+  async function load() {
+    setLoading(true);
+    try {
+      const res = await http.get("/manage/posts"); // Bearer добавится сам
+      if (res.status >= 200 && res.status < 300) {
+        setData(Array.isArray(res.data) ? res.data : (res.data?.items || []));
+      } else {
+        // ничего в консоль — просто оставим таблицу пустой
+        setData([]);
+      }
+    } catch {
+      // тихо глотаем
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  React.useEffect(() => {
-    dispatch({ type: FETCH_REQUEST, payload: { page, pageSize } });
-  }, [page, pageSize]);
+  useEffect(() => { load(); }, []);
 
   return (
-    <>
-      {error && <Alert type="error" message={error} style={{ marginBottom: 16 }} />}
+    <div>
+      <Space style={{ marginBottom: 16 }}>
+        <Button type="primary">Добавить пост</Button>
+      </Space>
       <Table
         rowKey="id"
         loading={loading}
-        dataSource={items}
+        dataSource={data}
         columns={[
-          { title: "ID", dataIndex: "id", width: 80 },
+          { title: "ID", dataIndex: "id", width: 100 },
           { title: "Title", dataIndex: "title" },
-        ]}
-        pagination={{
-          current: page,
-          pageSize,
-          total,
-          showSizeChanger: true,
-          onChange: (p, ps) => {
-            const params = new URLSearchParams(location.search);
-            params.set("page", String(p));
-            params.set("pageSize", String(ps));
-            history.push({ pathname: "/posts", search: `?${params.toString()}` });
+          {
+            title: "Actions",
+            width: 180,
+            render: (_, rec) => (
+              <Space>
+                <Button size="small">Edit</Button>
+                <Button size="small" danger>Delete</Button>
+              </Space>
+            ),
           },
-        }}
+        ]}
       />
-    </>
+    </div>
   );
 }

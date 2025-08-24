@@ -1,28 +1,20 @@
-﻿import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'node:path';
+﻿import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "node:path";
+
+const API_TARGET = "https://rest-test.machineheads.ru";
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: { '@': path.resolve(__dirname, 'src') }
-  },
+  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
   server: {
     port: 5176,
     proxy: {
-      // всё, что начинается с /auth, уходит на реальный бэкенд
-      '/auth': {
-        target: 'http://rest-test.machineheads.ru',
+      "^/(auth|profile|manage)": {
+        target: API_TARGET,
         changeOrigin: true,
-      },
-      '/profile': {
-        target: 'http://rest-test.machineheads.ru',
-        changeOrigin: true,
-      },
-      '/manage': {
-        target: 'http://rest-test.machineheads.ru',
-        changeOrigin: true,
-      },
-    },
-  },
+        secure: false
+      }
+    }
+  }
 });
