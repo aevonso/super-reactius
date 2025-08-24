@@ -1,0 +1,28 @@
+﻿{
+  "name": "superReact",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-redux": "7.2.9",
+    "redux": "4.2.1",
+    "redux-saga": "1.3.0",
+    "connected-react-router": "6.9.3",
+    "history": "4.10.1",
+    "react-router-dom": "5.3.4",
+    "axios": "1.7.2",
+    "js-cookie": "3.0.5",
+    "antd": "5.19.2"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.4.0"
+  }
+}
